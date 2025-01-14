@@ -9,23 +9,23 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NormalMessageDemo {
+import java.nio.charset.StandardCharsets;
 
-    private static final Logger log = LoggerFactory.getLogger(NormalMessageDemo.class);
+public class SyncProducerScheduledDemo {
+
+    private static final Logger log = LoggerFactory.getLogger(SyncProducerScheduledDemo.class);
 
     public static void main(String[] args) throws MQClientException, MQBrokerException, RemotingException, InterruptedException {
-        String serverAddr = "localhost:9876";
-        String producerGroup = "defaultGroup";
-        DefaultMQProducer producer = new DefaultMQProducer(producerGroup);
-        producer.setNamesrvAddr(serverAddr);
+        DefaultMQProducer producer = new DefaultMQProducer("scheduled-group");
+        producer.setNamesrvAddr("localhost:9876");
         producer.start();
 
-        Message message = new Message("someTopic", "someTag", "DefaultProducer -> Normal Message".getBytes());
-        message.setKeys("key-1");
+        Message message = new Message("TestTopic", "Scheduled Time".getBytes(StandardCharsets.UTF_8));
+        message.setDelayTimeLevel(3);
 
-        SendResult sendResult = producer.send(message);
+        SendResult result = producer.send(message);
 
-        log.info("{}", sendResult);
+        log.info("{}", result);
 
         producer.shutdown();
     }
